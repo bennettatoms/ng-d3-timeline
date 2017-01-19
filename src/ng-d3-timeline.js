@@ -1,11 +1,12 @@
 /**
- * ngD3Timeline is an angular directive that wraps the d3.timeline
+ * ngD3Timeline (https://github.com/bennettatoms/ng-d3-timeline)
+ * is an angular directive that wraps the d3.timeline
  * module by @jiahuang :: https://github.com/jiahuang/d3-timeline
  *
  * inject 'ngD3Timeline' module into your angular dependencies,
  * and use in markup with <ng-d3-timeline> element tag or attribute
  *
- * See demo at http://plnkr.co/edit/atRu85zH9vJkLOzMEe7t
+ * See demo for configuration options at http://plnkr.co/edit/atRu85zH9vJkLOzMEe7t
  *
  * @bennettatoms (Jan 19, 2017)
  */
