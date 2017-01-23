@@ -9,7 +9,7 @@ See [demo plunker](http://plnkr.co/edit/atRu85zH9vJkLOzMEe7t?p=preview) for samp
 Not currently set up for bower or other package install, so for now:
 
   * clone this repo
-  * include the `src/ng-d3-timeline.js` file somewhere in your project and add a script reference in `index.html`
+  * include the `src/ngD3timeline.js` file somewhere in your project and add a script reference in `index.html`
   * inject the `'ngD3Timeline'` module into your angular dependencies
   * use in markup with <ng-d3-timeline> element tag or attribute
 
