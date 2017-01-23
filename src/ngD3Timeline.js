@@ -6,18 +6,20 @@
  * inject 'ngD3Timeline' module into your angular dependencies,
  * and use in markup with <ng-d3-timeline> element tag or attribute
  *
- * See demo for configuration options at http://plnkr.co/edit/atRu85zH9vJkLOzMEe7t
+ * See demo for configuration options at http://plnkr.co/edit/atRu85zH9vJkLOzMEe7t?p=info
  *
  * @bennettatoms (Jan 19, 2017)
  */
 
 'use strict';
 
+angular.module('ngD3Timeline', []);
+
 (function() {
 
-  var injectParams = ['$window'];
+  var injectParams = ['$window', '$filter'];
 
-  var ngD3Timeline = function($window) {
+  var ngD3Timeline = function($window, $filter) {
      return {
       restrict: 'EA',
       scope: {
@@ -64,13 +66,38 @@
           colorPropertyName: null,
           colorCycle: colorCycle,
           beginning: 0,
+          beginDateLabel: false,
+          beginDateLabelMargin: {
+            left: 30,
+            right: 0,
+            top: 100, // distance below top of div
+            bottom:0
+          },
+          endDateLabel: false,
+          endDateLabelMargin: {
+            left: 0,
+            right: 80, // distance from right boundary -- to allow for label width
+            top: 100,  // distance below top of div
+            bottom:0
+          },
+          dateLabelFormat: 'M/d/yyyy',
+          showDateChanges: false,
+          dateChangeLineFormat: {
+            marginTop: 25,
+            marginBottom: 10,
+            width: 1,
+            color: '#ddd', // or string color val or colorCycle
+            stroke: 'stroke-dasharray',
+            spacing: '4 10',
+            addClass: '' // optional -- to add styling via CSS
+          },
           labelMargin: 0,
           ending: 0,
           margin: {
             left: 30,
-            right:30,
+            right: 30,
             top: 30,
-            bottom:30
+            bottom: 30
           },
           stacked: false,
           rotateTicks: false,
@@ -81,29 +108,35 @@
           navMargin: 60,
           showTimeAxis: true,
           showAxisTop: false,
-          showTodayLine: false,
+          showNowLine: false,
+          nowLineFormat: {
+            marginTop: 25,
+            marginBottom: 10,
+            width: 1,
+            color: 'red',
+            stroke: 'stroke-dasharray',
+            spacing: '5 5',
+            addClass: '' // optional -- to add styling via CSS
+          },
           timeAxisTick: false,
           timeAxisTickFormat: {
             stroke: 'stroke-dasharray',
             spacing: '4 10'
           },
-          showTodayFormat: {
-            marginTop: 25,
-            marginBottom: 0,
-            width: 1,
-            color: colorCycle
-          },
           showBorderLine: false,
-          showBorderFormat: {
+          borderLineFormat: {
             marginTop: 25,
             marginBottom: 0,
             width: 1,
-            color: colorCycle
+            color: colorCycle,
+            stroke: '',
+            spacing: '',
+            addClass: '' // optional -- to add styling via CSS
           },
           showAxisHeaderBackground: false,
           showAxisNav: false,
           showAxisCalendarYear: false,
-          axisBgColor: "white"
+          axisBgColor: 'white'
         };
 
         /** initialize chart with required params */
@@ -135,6 +168,29 @@
 
         function windowW() {
           return $window.innerWidth;
+        }
+
+        function formatDate(date) {
+          return $filter('date')(date, options.dateLabelFormat);
+        }
+
+        function areSameDate(begin, end) {
+          return begin.toDateString() === end.toDateString();
+        }
+
+        function getDateChanges(begin, end) {
+          if (!areSameDate(begin, end)) {
+            var dateChanges = [];
+            var lastMidnight = end.setHours(0, 0, 0, 0);
+            var firstMidnight = begin.setHours(0, 0, 0, 0);
+            do {
+              dateChanges.push(lastMidnight);
+              lastMidnight -= 86400000; // go back to midnight the day before and check if still greater than first
+            } while (lastMidnight > firstMidnight);
+            return dateChanges;
+          }
+
+          return [];
         }
 
         function svgW() {
@@ -205,6 +261,23 @@
               .attr('y', 14)
               .attr('class', 'calendarYear')
               .text(calendarLabel);
+          };
+
+          var appendBeginDateLabel = function appendBeginDateLabel(g, formattedBeginDate, lblMargin, centered) {
+            g.append('text')
+              .attr('class', 'timeline-label')
+              .attr('x', centered ? 0.5 * opts.width : lblMargin.left)
+              .attr('y', lblMargin.top)
+              .text(formattedBeginDate);
+          };
+
+          var appendEndDateLabel = function appendEndDateLabel(g, formattedEndDate, lblMargin) {
+            // console.log('inside the appendTimeAxisEndDate function with format end date:', formattedEndDate);
+            g.append('text')
+              .attr('class', 'timeline-label')
+              .attr('x', opts.width - lblMargin.right) //opts.margin.left + opts.width
+              .attr('y', lblMargin.top)
+              .text(formattedEndDate);
           };
 
           var appendTimeAxisNav = function appendTimeAxisNav(g) {
@@ -380,6 +453,23 @@
               xAxis.ticks(opts.tickFormat.numTicks || opts.tickFormat.tickTime, opts.tickFormat.tickInterval);
             }
 
+            // console.log(areSameDate(new Date(opts.beginning), new Date(opts.ending)));
+
+            // append date labels
+            if (opts.beginDateLabel) {
+              // console.log('opts beginning is ', opts.beginning);
+              // console.log('formatted begin:', formatDate(opts.beginning));
+              if (areSameDate(new Date(opts.beginning), new Date(opts.ending))) {
+                appendBeginDateLabel(g, formatDate(opts.beginning), opts.beginDateLabelMargin, true);
+              } else {
+                appendBeginDateLabel(g, formatDate(opts.beginning), opts.beginDateLabelMargin, false);
+                if (opts.endDateLabel) {
+                  // console.log('formatted end:', formatDate(opts.ending));
+                  appendEndDateLabel(g, formatDate(opts.ending), opts.endDateLabelMargin);
+                }
+              }
+            }
+
             // draw the chart
             g.each(function(d, i) {
               opts.chartData = d;
@@ -534,18 +624,27 @@
                 d.forEach(function (datum) {
                   var times = datum.times;
                   times.forEach(function (time) {
-                    appendLine(xScale(time[timestampOrStartTime()]), opts.showBorderFormat);
+                    appendLine(xScale(time[timestampOrStartTime()]), opts.borderLineFormat);
                     if (usingTimeRange()) {
-                      appendLine(xScale(time[timestamp.end]), opts.showBorderFormat);
+                      appendLine(xScale(time[timestamp.end]), opts.borderLineFormat);
                     }
                   });
                 });
               });
             }
 
-            if (opts.showTodayLine) {
-              var todayLine = xScale(new Date());
-              appendLine(todayLine, opts.showTodayFormat);
+            if (opts.showNowLine) {
+              var nowLine = xScale(new Date());
+              appendLine(nowLine, opts.nowLineFormat);
+            }
+
+            if (opts.showDateChanges) {
+              var dateLines = getDateChanges(new Date(opts.beginning), new Date(opts.ending));
+              console.log('date changes are:', dateLines);
+              dateLines.forEach(function(midnight) {
+                var thisLine = xScale(new Date(midnight));
+                appendLine(thisLine, opts.dateChangeLineFormat);
+              });
             }
 
             function getXPos(d, i) {
@@ -601,7 +700,9 @@
                 .attr('y1', lineFormat.marginTop)
                 .attr('x2', lineScale)
                 .attr('y2', opts.height - lineFormat.marginBottom)
+                .attr('class', lineFormat.addClass)
                 .style('stroke', lineFormat.color)//'rgb(6,120,155)')
+                .style(lineFormat.stroke, lineFormat.spacing)//'rgb(6,120,155)')
                 .style('stroke-width', lineFormat.width);
             }
 
@@ -615,7 +716,8 @@
 
   ngD3Timeline.$inject = injectParams;
 
-  angular.module('ngD3Timeline', [])
+  angular.module('ngD3Timeline')
     .directive('ngD3Timeline', ngD3Timeline);
-
 })();
+
+

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <style type="text/css">
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+      }
+
+      .axis text {
+        font-family: sans-serif;
+        font-size: 10px;
+      }
+
+      .timeline-label {
+        font-family: sans-serif;
+        font-size: 12px;
+      }
+
+      #timeline2 .axis {
+        transform: translate(0px,40px);
+        -ms-transform: translate(0px,40px); /* IE 9 */
+        -webkit-transform: translate(0px,40px); /* Safari and Chrome */
+        -o-transform: translate(0px,40px); /* Opera */
+        -moz-transform: translate(0px,40px); /* Firefox */
+      }
+
+      #coloredDiv {
+        height:20px; width:20px; float:left;
+      }
+
+      #name {
+        text-indent: .5em;
+      }
+
+      .angular-div {
+        background: transparent;
+      }
+    </style>
+  </head>
+
+  <body ng-app="ngD3TimelineDemo">
+    <div ng-controller="DemoCtrl as tl">
+      <pre>Note: demo requires lodash as a dependency, though the ngD3Timeline module itself does not.</pre>
+
+      <div class="angular-div">
+
+        <div>
+          <h5>ngD3Timeline with date labels and line for current time</h5>
+          <ng-d3-timeline
+            timeline-data="tl.testNowLineAndDateLabelsData"
+            timeline-options="tl.testNowLineAndDateLabelsOptions"
+            date-field="{{ tl.testNowLineAndDateLabelsDateField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>A simple ngD3Timeline</h5>
+          <ng-d3-timeline
+            timeline-data="tl.simpleTestData"
+            timeline-options="tl.simpleOptions"
+            start-field="{{ tl.simpleStartField }}"
+            end-field="{{ tl.simpleEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>A simple ngD3Timeline without Axis</h5>
+          <ng-d3-timeline
+            timeline-data="tl.simpleNoAxisTestData"
+            timeline-options="tl.simpleNoAxisOptions"
+            start-field="{{ tl.simpleNoAxisStartField }}"
+            end-field="{{ tl.simpleNoAxisEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline works with circles and a single date field passed in</h5>
+          <ng-d3-timeline
+            timeline-data="tl.testWithCirclesData"
+            timeline-options="tl.testWithCirclesOptions"
+            date-field="{{ tl.testWithCirclesDateField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline combine circles and rectangles</h5>
+          <ng-d3-timeline
+            timeline-data="tl.rectAndCirclesTestData"
+            timeline-options="tl.rectAndCirclesOptions"
+            start-field="{{ tl.rectAndCirclesStartField }}"
+            end-field="{{ tl.rectAndCirclesEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline with hover, click events, and scroll events</h5>
+          <ng-d3-timeline
+            timeline-data="tl.eventsTestData"
+            timeline-options="tl.eventsOptions"
+            start-field="{{ tl.eventsStartField }}"
+            end-field="{{ tl.eventsEndField }}">
+          </ng-d3-timeline>
+          <div id="hoverRes">
+            <div id="coloredDiv"></div>
+            <div id="name"></div>
+            <div id="scrolled_date"></div>
+          </div>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline can change colors and add labels</h5>
+          <ng-d3-timeline
+            timeline-data="tl.labelColorTestData"
+            timeline-options="tl.labelColorOptions"
+            start-field="{{ tl.labelColorStartField }}"
+            end-field="{{ tl.labelColorEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline rotate tick mark labels</h5>
+          <ng-d3-timeline
+            timeline-data="tl.rotateTestData"
+            timeline-options="tl.rotateOptions"
+            start-field="{{ tl.rotateStartField }}"
+            end-field="{{ tl.rotateEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline with colors mapped from the data</h5>
+          <ng-d3-timeline
+            timeline-data="tl.mappedColorsTestData"
+            timeline-options="tl.mappedColorsOptions"
+            start-field="{{ tl.mappedColorsStartField }}"
+            end-field="{{ tl.mappedColorsEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline with colors mapped from the data for individual time objects</h5>
+          <ng-d3-timeline
+            timeline-data="tl.colorPerDataPointTestData"
+            timeline-options="tl.colorPerDataPointOptions"
+            start-field="{{ tl.colorPerDataPointStartField }}"
+            end-field="{{ tl.colorPerDataPointEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline with relative timepoints</h5>
+          <ng-d3-timeline
+            timeline-data="tl.relativeTimeTestData"
+            timeline-options="tl.relativeTimeOptions"
+            start-field="{{ tl.relativeTimeStartField }}"
+            end-field="{{ tl.relativeTimeEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline stacked with axis on top</h5>
+          <ng-d3-timeline
+            timeline-data="tl.stackedTopAxisTestData"
+            timeline-options="tl.stackedTopAxisOptions"
+            start-field="{{ tl.stackedTopAxisStartField }}"
+            end-field="{{ tl.stackedTopAxisEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline stacked with backgrounds</h5>
+          <ng-d3-timeline
+            timeline-data="tl.stackedBckgrdTestData"
+            timeline-options="tl.stackedBckgrdOptions"
+            start-field="{{ tl.stackedBckgrdStartField }}"
+            end-field="{{ tl.stackedBckgrdEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>ngD3Timeline stacked with backgrounds and ticks</h5>
+          <ng-d3-timeline
+            timeline-data="tl.stackedBckgrdTicksTestData"
+            timeline-options="tl.stackedBckgrdTicksOptions"
+            start-field="{{ tl.stackedBckgrdTicksStartField }}"
+            end-field="{{ tl.stackedBckgrdTicksEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+        <div>
+          <h5>a complex ngD3Timeline</h5>
+          <ng-d3-timeline
+            timeline-data="tl.complexTestData"
+            timeline-options="tl.complexOptions"
+            start-field="{{ tl.complexStartField }}"
+            end-field="{{ tl.complexEndField }}">
+          </ng-d3-timeline>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="https://code.angularjs.org/1.5.8/angular.js"></script>
+    <script src="https://cdn.jsdelivr.net/lodash/4.6.1/lodash.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="../src/ngD3Timeline.js"></script>
+    <script src="./DemoCtrl.js"></script>
+  </body>
+
+</html>

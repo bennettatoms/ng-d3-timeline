@@ -42,7 +42,7 @@ Not currently set up for bower or other package install, so for now:
   An object whose properties configure the timeline (options listed below).
 
 #### Datetime parameter(s) to pass in:
-  
+
   **EITHER** (for discrete data points):
 
   * `date-field` :: { String (literal or angular expression) }
@@ -99,6 +99,31 @@ The following properties are configurable from your angular controller (along wi
       	})()
 
   * **beginning:** 0,
+  * **beginDateLabel:** false,
+  * **beginDateLabelMargin:** {
+    left: 30,
+    right: 0,
+    top: 100, // distance below top of div
+    bottom:0
+  },
+  * **endDateLabel:** false,
+  * **endDateLabelMargin:** {
+    left: 0,
+    right: 80, // distance from right boundary -- to allow for label width
+    top: 100,  // distance below top of div
+    bottom:0
+  },
+  * **dateLabelFormat:** 'M/d/yyyy',
+  * **showDateChanges:** false,
+  * **dateChangeLineFormat:** {
+    marginTop: 25,
+    marginBottom: 10,
+    width: 1,
+    color: '#ddd', // or string color val or colorCycle
+    stroke: 'stroke-dasharray',
+    spacing: '4 10',
+    addClass: '' // optional -- to add styling via CSS
+  },
   * **labelMargin:** 0,
   * **ending:** 0,
   * **margin:** {
@@ -116,30 +141,38 @@ The following properties are configurable from your angular controller (along wi
   * **navMargin:** 60,
   * **showTimeAxis:** true,
   * **showAxisTop:** false,
-  * **showTodayLine:** false,
+  * **showNowLine:** false,
+  * **nowLineFormat:** {
+    marginTop: 25,
+    marginBottom: 10,
+    width: 1,
+    color: 'red',
+    stroke: 'stroke-dasharray',
+    spacing: '5 5',
+    addClass: '' // optional -- to add styling via CSS
+  },
   * **timeAxisTick:** false,
   * **timeAxisTickFormat:** {
     stroke: 'stroke-dasharray',
     spacing: '4 10'
   },
-  * **showTodayFormat:** {
-    marginTop: 25,
-    marginBottom: 0,
-    width: 1,
-    color: colorCycle
-  },
   * **showBorderLine:** false,
-  * **showBorderFormat:** {
+  * **borderLineFormat:** {
     marginTop: 25,
     marginBottom: 0,
     width: 1,
-    color: colorCycle
+    color: colorCycle,
+    stroke: '',
+    spacing: '',
+    addClass: '' // optional -- to add styling via CSS
   },
   * **showAxisHeaderBackground:** false,
   * **showAxisNav:** false,
   * **showAxisCalendarYear:** false,
   * **axisBgColor:** "white"
 
+### Date Labels
+**Note:** If `beginning` and `ending` times for timeline are on the same date and `beginDateLabel` and `endDateLabel` are `true`, the chart will display only one date, which will be centered under the chart by default, rather than showing the same date on both ends of the timeline x-axis.
 
 ### Scrolling
 **Note:** If you want the timeline to be horizontally scrollable, as can be accomplished with `d3.timeline`, you must set `scrollable: true`, in the configuration options object. Additionally, you can set the custom `scroll` callback to execute on scroll.
