@@ -70,14 +70,14 @@ angular.module('ngD3Timeline', []);
           beginDateLabelMargin: {
             left: 30,
             right: 0,
-            top: 100, // distance below top of div
+            top: 100,       // distance below top of div
             bottom:0
           },
           endDateLabel: false,
           endDateLabelMargin: {
             left: 0,
-            right: 80, // distance from right boundary -- to allow for label width
-            top: 100,  // distance below top of div
+            right: 80,      // distance from right boundary -- to allow for label width
+            top: 100,       // distance below top of div
             bottom:0
           },
           dateLabelFormat: 'M/d/yyyy',
@@ -86,10 +86,10 @@ angular.module('ngD3Timeline', []);
             marginTop: 25,
             marginBottom: 10,
             width: 1,
-            color: '#ddd', // or string color val or colorCycle
-            stroke: 'stroke-dasharray',
-            spacing: '4 10',
-            addClass: '' // optional -- to add styling via CSS
+            color: '#ddd',  // or string color val or colorCycle
+            stroke: '',
+            spacing: '',
+            addClass: ''    // optional -- to add styling via CSS
           },
           labelMargin: 0,
           ending: 0,
@@ -101,6 +101,23 @@ angular.module('ngD3Timeline', []);
           },
           stacked: false,
           rotateTicks: false,
+          tooltips: {
+            showOnHover: false,
+            contentHtml: function (d, index, datum) {
+              return '<div class="ng-d3-timeline-tooltip-div"><p class="ng-d3-timeline-tooltip-timestamp">' + new Date(d[timeFieldArgs[0]])  + '</p></div>';
+            },
+            border: {
+              width: 3,     // integer number of pixels
+              color: null,  // defaults to colorCycle(index), so same as datum circle/rect
+              style: 'solid'
+            },
+            backgroundColor: '#eee',
+            width: 200,
+            offset: {
+              top: 0,
+              left: 0
+            }
+          },
           timeIsRelative: false,
           fullLengthBackgrounds: false,
           itemHeight: 20,
@@ -108,7 +125,7 @@ angular.module('ngD3Timeline', []);
           navMargin: 60,
           showTimeAxis: true,
           showAxisTop: false,
-          showNowLine: false,
+          showNowLine: true,
           nowLineFormat: {
             marginTop: 25,
             marginBottom: 10,
@@ -116,7 +133,7 @@ angular.module('ngD3Timeline', []);
             color: 'red',
             stroke: 'stroke-dasharray',
             spacing: '5 5',
-            addClass: '' // optional -- to add styling via CSS
+            addClass: ''    // optional -- to add styling via CSS
           },
           timeAxisTick: false,
           timeAxisTickFormat: {
@@ -131,7 +148,7 @@ angular.module('ngD3Timeline', []);
             color: colorCycle,
             stroke: '',
             spacing: '',
-            addClass: '' // optional -- to add styling via CSS
+            addClass: ''    // optional -- to add styling via CSS
           },
           showAxisHeaderBackground: false,
           showAxisNav: false,
@@ -152,7 +169,14 @@ angular.module('ngD3Timeline', []);
                 opts[prop] = userPrefs[prop];
               } else {
                 for (var subprop in userPrefs[prop]) {
-                  opts[prop][subprop] = userPrefs[prop][subprop];
+                  if (eqValTypes.indexOf(typeof(userPrefs[prop][subprop])) > -1) {
+                    opts[prop][subprop] = userPrefs[prop][subprop];
+                  } else {
+                    for (var subsubprop in userPrefs[prop][subprop]) {
+                      opts[prop][subprop][subsubprop] = userPrefs[prop][subprop][subsubprop];
+
+                    }
+                  }
                 }
               }
             }
@@ -279,6 +303,17 @@ angular.module('ngD3Timeline', []);
               .attr('y', lblMargin.top)
               .text(formattedEndDate);
           };
+
+          var fixedHTMLtooltip = d3.select('body').append('div')
+            .attr('class', 'ng-d3-timeline-tooltip')
+            .style('width', opts.tooltips.width + 'px')
+            .style('position', 'absolute')
+            .style('text-align', 'center')
+            .style('padding', '0 2px')
+            .style('margin-top', 0)
+            .style('font', '12px sans-serif')
+            .style('background', opts.tooltips.backgroundColor)
+            .style('opacity', 0);
 
           var appendTimeAxisNav = function appendTimeAxisNav(g) {
             var timelineBlocks = 6;
@@ -454,7 +489,6 @@ angular.module('ngD3Timeline', []);
             }
 
             // console.log(areSameDate(new Date(opts.beginning), new Date(opts.ending)));
-
             // append date labels
             if (opts.beginDateLabel) {
               // console.log('opts beginning is ', opts.beginning);
@@ -513,14 +547,44 @@ angular.module('ngD3Timeline', []);
                     }
                     return opts.colorCycle(index);
                   })
-                  .on('mousemove', function (d, i) {
-                    opts.hover(d, index, datum);
+                  .on('mousemove', function (d, i, datum) {
+                    // console.log('MOUSEMOVE over item', d, 'with index', index, 'datum', datum, 'and with color', colorCycle(index))
+                    if (opts.tooltips.showOnHover) {
+                      var tooltipString = opts.tooltips.contentHtml(d, i, datum);
+                      var borderStyle = opts.tooltips.border.width + 'px ' + opts.tooltips.border.style + ' ' + (isDefinedAndNotNull(opts.tooltips.border.color) ? opts.tooltips.border.color : colorCycle(index));
+
+                      fixedHTMLtooltip
+                        .html(tooltipString)
+                        .style('left', (d3.event.pageX - 0.5 * opts.tooltips.width + opts.tooltips.offset.left) + 'px')
+                        .style('top', (d3.event.pageY - 80 - opts.tooltips.offset.top) + 'px')
+                        .style('border', borderStyle);
+                    }
                   })
                   .on('mouseover', function (d, i) {
-                    opts.mouseover(d, i, datum);
+                    // console.log('moused over item', d, 'with index', i, 'and with color', colorCycle(i))
+                    if (opts.tooltips.showOnHover) {
+                      fixedHTMLtooltip
+                        .style('opacity', 0)
+                        .style('display', 'inline');
+
+                      fixedHTMLtooltip
+                        .transition()
+                        .duration(200)
+                        .style('opacity', .9);
+                        // .style('background', colorCycle(index));
+                        // .style('border', '2px solid ' + colorCycle(index));
+
+                      d3.select(this).transition()
+                        .ease('exp-out')
+                        .delay(50)
+                        .duration(500);
+                    }
                   })
                   .on('mouseout', function (d, i) {
-                    opts.mouseout(d, i, datum);
+                    if (opts.tooltips.showOnHover) {
+                      fixedHTMLtooltip
+                        .style('display', 'none');
+                    }
                   })
                   .on('click', function (d, i) {
                     opts.click(d, index, datum);
@@ -535,8 +599,7 @@ angular.module('ngD3Timeline', []);
                     }
 
                     return d.id ? d.id : 'timelineItem_' + index + '_' + i;
-                  })
-                ;
+                  });
 
                 g.selectAll('svg').data(data).enter()
                   .append('text')
@@ -544,8 +607,7 @@ angular.module('ngD3Timeline', []);
                   .attr('y', getStackTextPosition)
                   .text(function(d) {
                     return d.label;
-                  })
-                ;
+                  });
 
                 if (opts.rowSeparatorsColor) {
                   var lineYAxis = ( opts.itemHeight + opts.itemMargin / 2 + opts.margin.top + (opts.itemHeight + opts.itemMargin) * yAxisMapping[index]);
@@ -640,7 +702,7 @@ angular.module('ngD3Timeline', []);
 
             if (opts.showDateChanges) {
               var dateLines = getDateChanges(new Date(opts.beginning), new Date(opts.ending));
-              console.log('date changes are:', dateLines);
+              // console.log('date changes are:', dateLines);
               dateLines.forEach(function(midnight) {
                 var thisLine = xScale(new Date(midnight));
                 appendLine(thisLine, opts.dateChangeLineFormat);
@@ -719,5 +781,4 @@ angular.module('ngD3Timeline', []);
   angular.module('ngD3Timeline')
     .directive('ngD3Timeline', ngD3Timeline);
 })();
-
 

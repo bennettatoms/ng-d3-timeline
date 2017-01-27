@@ -22,7 +22,7 @@ Not currently set up for bower or other package install, so for now:
 
     The data to display, an array of objects with a `times` property, whose value is the data points to display, e.g.:
 
-      [
+      	[
           {
               times: [
                 {"begin": 1355752800000, "end": 1355759900000},
@@ -39,7 +39,7 @@ Not currently set up for bower or other package install, so for now:
 
   * `timeline-options` :: { Object }
 
-  An object whose properties configure the timeline (options listed below).
+  	An object whose properties configure the timeline (options listed below).
 
 #### Datetime parameter(s) to pass in:
 
@@ -63,18 +63,21 @@ Not currently set up for bower or other package install, so for now:
 
 **Note:** If `date-field` attribute is given a value in the markup, it will override any start or end parameters given.
 
+#### Tooltips
+I have also added configurable tooltips shown on hover, which are not shown by default. 
+
 ## Configuring the timeline
 
 The following properties are configurable from your angular controller (along with default values):
 
-  * **display:** 'rect', (or 'circle')
-  * **width:** null,     (Number)
-  * **height:** null,    (Number)
+  * **display:** 'rect', // or 'circle'
+  * **width:** null,     // Number
+  * **height:** null,    // Number
   * **tickFormat:** {
-    format: d3.time.format("%I %p"),
-    tickTime: d3.time.hours,
-    tickInterval: 1,
-    tickSize: 6
+    * format: d3.time.format("%I %p"),
+    * tickTime: d3.time.hours,
+    * tickInterval: 1,
+    * tickSize: 6
   },
   * **hover:** function () {},
   * **mouseover:** function () {},
@@ -101,36 +104,59 @@ The following properties are configurable from your angular controller (along wi
   * **beginning:** 0,
   * **beginDateLabel:** false,
   * **beginDateLabelMargin:** {
-    left: 30,
-    right: 0,
-    top: 100, // distance below top of div
-    bottom:0
+    * left: 30,
+    * right: 0,
+    * top: 100, // distance below top of div
+    * bottom:0
   },
+  * **ending:** 0,
   * **endDateLabel:** false,
   * **endDateLabelMargin:** {
-    left: 0,
-    right: 80, // distance from right boundary -- to allow for label width
-    top: 100,  // distance below top of div
-    bottom:0
+    * left: 0,
+    * right: 80, // distance from right boundary -- to allow for label width
+    * top: 100,  // distance below top of div
+    * bottom:0
   },
   * **dateLabelFormat:** 'M/d/yyyy',
   * **showDateChanges:** false,
   * **dateChangeLineFormat:** {
-    marginTop: 25,
-    marginBottom: 10,
-    width: 1,
-    color: '#ddd', // or string color val or colorCycle
-    stroke: 'stroke-dasharray',
-    spacing: '4 10',
-    addClass: '' // optional -- to add styling via CSS
+  	* marginTop: 25,
+    * marginBottom: 10,
+    * width: 1,
+    * color: '#ddd', // or string color val or colorCycle
+    * stroke: 'stroke-dasharray',
+    * spacing: '4 10',
+    * addClass: '' // optional -- to add styling via CSS
   },
   * **labelMargin:** 0,
-  * **ending:** 0,
   * **margin:** {
-    left: 30,
-    right:30,
-    top: 30,
-    bottom:30
+    * left: 30,
+    * right:30,
+    * top: 30,
+    * bottom:30
+  },
+  * **tooltips**: {
+	* showOnHover: false,
+    * contentHtml: 
+    		
+    		function (d, index, datum) {
+        		return '<div class="ng-d3-timeline-tooltip-div">' +
+        			'<p class="ng-d3-timeline-tooltip-timestamp">' + 						new Date(d[timeFieldArgs[0]]) + 
+        			'</p>' + 
+        		'</div>';
+      		},
+      		
+    * border: {
+    	* width: 3,     // integer number of pixels
+    	* color: null,  // defaults to colorCycle(index), so same as datum circle/rect
+    	* style: 'solid'
+      },
+    * backgroundColor: '#eee',
+    * width: 200,
+    * offset: {
+    	* top: 0,
+    	* left: 0
+    }
   },
   * **stacked:** false,
   * **rotateTicks:** false, (Number, in degrees)
@@ -143,28 +169,28 @@ The following properties are configurable from your angular controller (along wi
   * **showAxisTop:** false,
   * **showNowLine:** false,
   * **nowLineFormat:** {
-    marginTop: 25,
-    marginBottom: 10,
-    width: 1,
-    color: 'red',
-    stroke: 'stroke-dasharray',
-    spacing: '5 5',
-    addClass: '' // optional -- to add styling via CSS
+    * marginTop: 25,
+    * marginBottom: 10,
+    * width: 1,
+    * color: 'red',
+    * stroke: 'stroke-dasharray',
+    * spacing: '5 5',
+    * addClass: '' // optional -- to add styling via CSS
   },
   * **timeAxisTick:** false,
   * **timeAxisTickFormat:** {
-    stroke: 'stroke-dasharray',
-    spacing: '4 10'
+    * stroke: 'stroke-dasharray',
+    * spacing: '4 10'
   },
   * **showBorderLine:** false,
   * **borderLineFormat:** {
-    marginTop: 25,
-    marginBottom: 0,
-    width: 1,
-    color: colorCycle,
-    stroke: '',
-    spacing: '',
-    addClass: '' // optional -- to add styling via CSS
+    * marginTop: 25,
+    * marginBottom: 0,
+    * width: 1,
+    * color: colorCycle,
+    * stroke: '',
+    * spacing: '',
+    * addClass: '' // optional -- to add styling via CSS
   },
   * **showAxisHeaderBackground:** false,
   * **showAxisNav:** false,

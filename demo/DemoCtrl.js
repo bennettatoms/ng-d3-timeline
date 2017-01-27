@@ -38,8 +38,22 @@ angular.module('ngD3TimelineDemo', ['ngD3Timeline']);
       display: 'circle', // 'rect'
       itemMargin: -8,
       itemHeight: 16,
-      hover: function(d, index, datum) {
-        console.log( 'This is d:', d, '\ndatum:', datum, '\nindex:', index);
+      tooltips: {
+        showOnHover: true,
+        contentHtml: function(d, index, datum) {
+          var tooltipString = '<div class="ng-d3-timeline-tooltip-activity-div"><h4 class="ng-d3-timeline-tooltip-activity">' + d.activity  + '</h4></div>' +
+                              '<div class="ng-d3-timeline-tooltip-timestamp-div"><p class="ng-d3-timeline-tooltip-timestamp">' + new Date(d.timestamp)  + '</p></div>';
+          return tooltipString;
+        },
+        width: 150,
+        offset: {
+          top: 0,
+          left: 0
+        },
+        border: {
+          width: 5
+        },
+        backgroundColor: 'aliceblue'
       },
       click: function (d, i, datum) {
         console.log('datum is:', datum);
